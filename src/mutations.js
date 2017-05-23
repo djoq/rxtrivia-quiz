@@ -4,7 +4,6 @@ export const mutations = {
     state.question = question
   },
   bump: (state, collection) => {
-    // console.log('[BUMP::QUESTION]', collection)
     let setter = state
     setter['collection'] = collection
     state => setter.collection
@@ -18,5 +17,20 @@ export const mutations = {
     let setter = state
     setter['answered'] = pick
     state => setter.answered
+  },
+  rng: (state) => {
+    let setter = state
+    setter['random'] = Math.floor(Math.random() * 4)
+    state => setter.random
+  },
+  mapper: (state, endpoint) => {
+    let setter = state
+    setter['endpoint'] = endpoint
+    state => setter.endpoint
+  },
+  setName: (state, name) => {
+    let setter = state
+    setter['quizName'] = name
+    state => setter.quizName
   }
 }

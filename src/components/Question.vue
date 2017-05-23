@@ -1,20 +1,19 @@
 <template>
   <div class="question">
-
-
-
-  <component v-if="collection.length==4" :is="activeType" :answer="collection[random]" ></component>
-
-  <choices :collection="collection" :tagname="tagname" :answer="collection[random]" ></choices>
-  
-  <hr />
-
-  <select v-on:change="onChange" class="floor-left">
-    <option v-for="type of types" v-value="type">{{type}}</option>
-  </select>
-
-  <ui-button class="floor-right" @click="switchFormat" color="primary" raised >Brand/Gen</ui-button>
-
+    <div v-if="whichType()">
+      <h3 > {{ quizName }} </h3>
+      <label class="ceil-left topper"> Try another topic </label> 
+      <select v-on:change="onChange" class="ceil-left" >
+        <option disabled>Select Another </option>
+        <option v-for="type of types" :value="type">{{type}}</option>
+      </select>
+    </div>
+    <div v-else>
+      <h3 > Top 200 </h3>
+    </div>
+    <component v-if="collection.length>2" :is="currentFormat" :answer="collection[random]" ></component>
+    <choices :collection="collection" :tagname="tagname" :answer="collection[random]" ></choices>
+    <ui-button class="ceil-right" @click="switchFormat" color="primary" raised >Brand/Gen</ui-button>
   </div>
 </template>
 
@@ -28,7 +27,7 @@ export default {
   name: 'question',
   computed: {
     random () {
-      return 1
+      return store.state.random
     },
     collection () {
       return store.state.collection
@@ -36,21 +35,30 @@ export default {
     types () {
       return store.state.types
     },
-    activeType () {
+    currentFormat () {
       return store.getters.activated
+    },
+    quizName () {
+      return store.state.quizName
     },
     tagname () {
       return store.getters.tagName
+    },
+    endpoint () {
+      return store.state.endpoint
     }
   },
   methods: {
+    whichType () {
+      return location.hash.includes('type')
+    },
     switchFormat () {
       return store.commit('swapFormat')
     },
     onChange (e) {
       console.log('handle select ', e.target.value)
-      location.hash = '#/?type=' + e.target.value.split(' ')[0]
-      fetch('/drugs.json')
+      store.commit('setName', e.target.value)
+      fetch()
     }
   },
   data () {
@@ -63,31 +71,30 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.floor-left {
+.ceil-left {
   left: 12px;
-  top: 18px;
+  top: 24px;
   position: fixed;
 }
-.floor-right {
+.topper {
+  left: 36px;
+  top: 5px;
+}
+.ceil-right {
   right: 12px;
   top: 12px;
   position:fixed;
 }
+.floor-right {
+  right: 12px;
+  bottom: 12px;
+  position:fixed;
+}
 h1, h2 {
+  margin-top: -36px;
   font-weight: normal;
 }
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
+a, h3 {
   color: #42b983;
 }
 </style>

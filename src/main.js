@@ -4,8 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-import KeenUI from 'keen-ui'
-Vue.use(KeenUI)
+import {UiButton, UiModal, UiTab, UiTabs} from 'keen-ui'
 
 import '../node_modules/keen-ui/dist/keen-ui.min.css'
 Vue.config.productionTip = false
@@ -19,19 +18,21 @@ Vue.component('feedback', Feedback)
 Vue.component('Generic', Generic)
 Vue.component('choices', Choices)
 Vue.component('Brand', Brand)
+Vue.component('ui-button', UiButton)
+Vue.component('ui-modal', UiModal)
 
 import { actions } from './actions'
 const { fetch } = actions
-
+import store from './store'
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   mounted: () => {
     console.log('[MAIN::MOUNTED]', location)
-    fetch('/drugs.json')
+    if (location.hash.includes('type')) store.commit('setName', location.hash.split('=')[1])
+    fetch()
   },
   router,
   template: '<App/>',
-  components: { App }
+  components: { App, UiTab, UiTabs }
 })
-
